@@ -3,4 +3,7 @@ Data Structure and Algorithm
 
 This is the readme file for DSA.
 
-Topic:
+Topic: Fridge and Pantry Inventory System
+
+#1
+Uploaded sample code for reference.
