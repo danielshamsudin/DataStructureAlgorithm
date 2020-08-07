@@ -90,28 +90,37 @@ void removeItem()
     cout << "Item " << line << " has been removed." << endl;
 }
 
+string strLower(string a){
+    string b="";
+
+    for(int i=0; i<a.length(); i++)    
+        b+=tolower(a[i]);
+    return b;
+}
+
+
+
+
 void editItem()
 {
     const char *filename = "inventory.dat";
-    int defaultCounter = 1, selector, selected, quantity;
+    int defaultCounter = 1, selected, quantity;
     bool found;
     string input, brandName, itemName;
+    ifstream inputFile(filename);
+    ofstream temp("temp.dat", ofstream::out);
 
     cout << "Select the item that you wish to edit (by brand name / by item name / by quantity): ";
     getline(cin, input);
-    ifstream inputFile(filename);
-    ofstream temp("temp.dat", ofstream::out);
-    char c;
-
     cout << input << endl;
     if(isdigit(input[0]))
     {
-        selector = stoi(input);
         while(getline(inputFile, brandName, '\t')){
             defaultCounter++;
             getline(inputFile, itemName, '\t');
             inputFile >> quantity;
-            if(selector == quantity){
+            if(stoi(input) == quantity)
+            {
                 selected = defaultCounter;
                 found = true;
                 break;
@@ -119,14 +128,10 @@ void editItem()
         }
     }
     else
-    { 
-        for(char i: input) 
-            putchar(tolower(input[i]));  
+    {   
         while(getline(inputFile, brandName, '\t')){
-            for(char i: brandName)
-                putchar(tolower(brandName[i]));
             defaultCounter++;
-            if(input == brandName)
+            if(strLower(input) == strLower(brandName))
             {
                 getline(inputFile, itemName, '\t');
                 inputFile >> quantity;
@@ -134,9 +139,7 @@ void editItem()
                 break;
             }
             getline(inputFile, itemName, '\t');
-            for(char i: itemName)
-                putchar(tolower(itemName[i]));
-            if(input == itemName)
+            if(strLower(input) == strLower(itemName))
             {
                 inputFile >> quantity;
                 found = true; 
@@ -144,7 +147,7 @@ void editItem()
             }
         }
     }
-    
+
 
     if(found==true) {
         cout << endl << "Item of desired property " << "''" << input << " '' found. Details are as follows: " << endl;
@@ -153,11 +156,10 @@ void editItem()
         cout << "Quantity: " << quantity << endl;
         cout << endl << endl << endl << "Please select which property to edit";
     }
-    else cout << "You lost" << endl;
+    else cout << "Item not found." << endl;
 
 
     //To-dos:
-    //Implement tolower search properly
     //Implement editing functions
 }
 #endif
