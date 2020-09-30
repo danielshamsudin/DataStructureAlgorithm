@@ -4,21 +4,25 @@
 #include <vector>
 #include <iomanip>
 #include <cctype>
+#include "Date.h"
 #ifndef INVENTORY
 #define INVENTORY  
 using namespace std;
 
 
-struct Inventory{
+struct Inventory
+{
     string brandName;
     string itemName;
     int quantity;
+    Date date;
     struct Inventory* next;
 };
 
 struct Inventory* top;
 
-void push(string brandName, string itemName, int quantity){
+void push(string brandName, string itemName, int quantity, Date expiryDate)
+{
     struct Inventory* temp;
     temp = new Inventory();
 
@@ -30,11 +34,13 @@ void push(string brandName, string itemName, int quantity){
     temp->brandName = brandName;
     temp->itemName = itemName;
     temp->quantity = quantity;
+    temp->date = expiryDate;
     temp->next = top;
     top = temp;
 }
 
-bool isEmpty(){
+bool isEmpty()
+{
     return top == NULL;
 }
 
@@ -44,8 +50,7 @@ void pop()
 
     if(isEmpty())
         cout << "\nStack Underflow" << endl;
-    else
-    {
+    else {
         temp = top;
         top = top->next;
         temp->next = NULL;
@@ -54,55 +59,62 @@ void pop()
 }
 
 
-void loadInventory() {
+void loadInventory()
+{
     string brandName;
     string itemName;
-    int quantity;
+    string expire;
+    Date temp;
+    int quantity, d, m, y;
     ifstream in("inventory.dat");
     while(getline(in,brandName, '\t'))
     {
         getline(in, itemName, '\t');
         in >> quantity;
-        push(brandName, itemName, quantity);
+        in >> temp;
+        push(brandName, itemName, quantity, temp);
         in.get();
     }
 }
 
 
-void showInventory() {
+void showInventory()
+{
     int counter = 0;
     struct Inventory* temp;
 
     if(isEmpty())
         cout << "Nothing to show" << endl;
-    else
-    {
+    else {
         temp = top;
-        cout << "No.\t" << "Brand\t" << "Item\t" << "Quantity\t" << "Date\n";
+        cout << "No.\t" << "Brand\t" << "Item\t" << "Quantity\t" << "Expiry Date\n";
         cout << "_________________________________________________\n";
         while(temp!=NULL)
         {
             counter++;
             cout << endl;
-            cout << counter << ")\t" << temp->brandName << "\t" << temp->itemName << "\t" << temp->quantity << endl;
+            cout << counter << ")\t" << temp->brandName << "\t" << temp->itemName << "\t" << temp->quantity << "\t" << temp->date.getDate() << endl;
             temp = temp->next;
         }
     }
 }
 
-void addItem(){
+void addItem()
+{
     string brandName,itemName;
-	int quantity;
-	cout << "enter brand, item name, followed by quantity: \n";
+	int quantity, day, month, year;
+	cout << "enter brand, item name, quantity, and expiry date: \n";
 	cout << "Brand Name: "; 
 	getline(cin, brandName);
 	cout << "Item Name: "; 
 	getline(cin,itemName);
 	cout << "Quantity: "; 
 	cin >> quantity;
-	
+    cout << "Date: \n";
+    cin >> day >> month >> year;
+    Date dte(day, month, year);  
     ofstream out("inventory.dat", ios::app);
-    out << brandName << '\t' << itemName << '\t' << quantity << '\n';
+    out << brandName << '\t' << itemName << '\t' << quantity << '\t' << dte << '\n';
     cout << "Item has been added successfully." << endl;
 }
 
@@ -176,6 +188,26 @@ Inventory* SortedMerge(Inventory* a, Inventory* b, int scenario)
             result->next = SortedMerge(a, b->next, scenario);
         }
     }
+    else if(scenario==7) {      //Sorting scenario 7 (Ascending Date Sorting)
+        if (a->date.getYear() <= b->date.getYear()) {
+            result = a;
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
+    else if(scenario==8) {      //Sorting scenario 8 (Descending Date Sorting)
+        if (a->date.getYear() > b->date.getYear()) {
+            result = a;
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
     return(result);
 }
 
@@ -199,7 +231,8 @@ void FrontBackSplit(Inventory* source, Inventory** frontRef, Inventory** backRef
     slow->next = NULL;
 }
 
-void MergeSort(Inventory** headRef, int scenario) {
+void MergeSort(Inventory** headRef, int scenario)
+{
     Inventory* head = *headRef;
     Inventory* temp1;
     Inventory* temp2;
@@ -215,7 +248,8 @@ void MergeSort(Inventory** headRef, int scenario) {
     *headRef = SortedMerge(temp1, temp2, scenario);   //merge two sorted linked lists 
 }
 
-void sortAndDisplay() {
+void sortAndDisplay()
+{
     std::system("clear");  //use ("cls") on Windows
     int entry;
     showInventory();
@@ -225,11 +259,13 @@ void sortAndDisplay() {
     cout << "3.) By item name (Ascending)" << endl;
     cout << "4.) By item name (Descending)" << endl;
     cout << "5.) By item quantity (Ascending)" << endl;
-    cout << "6.) By item quantity (Descending)" << endl << endl << endl;
+    cout << "6.) By item quantity (Descending)" << endl;
+    cout << "7.) By date (Ascending)" << endl;
+    cout << "8.) By date (Descending)" << endl;
 
     cout << "Option: ";
     cin >> entry;
-    if(entry>0 && entry<7)
+    if(entry>0 && entry<9)
         MergeSort(&top, entry);
     else
         cout << "Please enter one of the numbers listed!" << endl;
@@ -267,9 +303,6 @@ void sortAndDisplay() {
 //         b+=tolower(a[i]);
 //     return b;
 // }
-
-
-
 
 // void editItem()
 // {

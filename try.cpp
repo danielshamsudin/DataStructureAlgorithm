@@ -8,4 +8,3 @@ int main()
 	sortAndDisplay();
 	showInventory();
 }
-
