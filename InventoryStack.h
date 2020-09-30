@@ -8,47 +8,6 @@
 #define INVENTORY  
 using namespace std;
 
-// class Inventory{
-//     string brandName;
-//     string itemName;
-//     int quantity;
-//     Inventory *next;
-//     Inventory* top = NULL;
-
-// public:
-//     Inventory(){}
-//     Inventory(string bname,string n, int q){
-//         brandName = bname;
-//         itemName = n;
-//         quantity = q;
-//     }
-//     void setbrand(string b){brandName = b;}
-//     void setname(string n) {itemName = n;}
-//     void setquantity(int q){quantity = q;}
-//     string getName (){return itemName;}
-
-//     friend ostream& operator<<(ostream& out, const Inventory& I){
-//         out << I.brandName << '\t' << I.itemName << '\t' << I.quantity << endl;
-//         return out;
-//     }
-    // void push(string bname, string n, int q){
-    //     Inventory* Node = new Inventory();
-    //     Node->brandName = bname;
-    //     Node->itemName = n;
-    //     Node->quantity = q;
-    //     Node->next = top;
-    //     top = Node;
-    // }
-
-    // void pop(){
-    //     if(top==NULL)
-    //         cout << "Stack is empty.." << endl;
-    //     else 
-    //     {
-    //         cout << "Element " << top->brandName << ", " << top->itemName << ", " << top->quantity << " removed" << endl;
-    //         top = top->next;
-    //     }
-// };
 
 struct Inventory{
     string brandName;
@@ -104,7 +63,6 @@ void loadInventory() {
     {
         getline(in, itemName, '\t');
         in >> quantity;
-        cout << brandName << " " << itemName << " " << quantity << " added" << endl;
         push(brandName, itemName, quantity);
         in.get();
     }
@@ -120,32 +78,128 @@ void showInventory() {
     else
     {
         temp = top;
+        cout << "No.\t" << "Brand\t" << "Item\t" << "Quantity\t" << "Date\n";
+        cout << "_________________________________________________\n";
         while(temp!=NULL)
         {
             counter++;
             cout << endl;
-            cout << counter << ")" << temp->brandName << " " << temp->itemName << " " << temp->quantity << " displayed." << endl;
+            cout << counter << ")\t" << temp->brandName << "\t" << temp->itemName << "\t" << temp->quantity << endl;
             temp = temp->next;
         }
     }
 }
 
-// void addItem(){
-//     string brandName,itemName;
-// 	int quantity;
-// 	cout << "enter brand, item name, followed by quantity: \n";
-// 	cout << "Brand Name: "; 
-// 	getline(cin, brandName);
-// 	cout << "Item Name: "; 
-// 	getline(cin,itemName);
-// 	cout << "Quantity: "; 
-// 	cin >> quantity;
+void addItem(){
+    string brandName,itemName;
+	int quantity;
+	cout << "enter brand, item name, followed by quantity: \n";
+	cout << "Brand Name: "; 
+	getline(cin, brandName);
+	cout << "Item Name: "; 
+	getline(cin,itemName);
+	cout << "Quantity: "; 
+	cin >> quantity;
 	
-//     ofstream out("inventory.dat", ios::app);
-//     out << brandName << '\t' << itemName << '\t' << quantity << '\n';
-//     cout << "Item has been added successfully." << endl;
-// }
+    ofstream out("inventory.dat", ios::app);
+    out << brandName << '\t' << itemName << '\t' << quantity << '\n';
+    cout << "Item has been added successfully." << endl;
+}
 
+
+Inventory* SortedMerge(Inventory* a, Inventory* b, int scenario)
+{
+    Inventory* result = NULL;
+
+    if(a==NULL)               //Base case 1
+        return(b);
+    else if (b == NULL)       //Base case 2 
+        return(a);
+
+    if(scenario==1) {          //Sorting scenario 1 (Brand Name Sorting)
+        if (a->brandName <= b->brandName) {
+            result = a;       
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
+    else if(scenario==2) {      //Sorting scenario 2 (Item Name Sorting)
+        if (a->itemName <= b->itemName) {
+            result = a;
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
+    else if(scenario==3) {      //Sorting scenario 3 (Item Quantity Sorting)
+        if (a->quantity <= b->quantity) {
+            result = a;
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
+    return(result);
+}
+
+void FrontBackSplit(Inventory* source, Inventory** frontRef, Inventory** backRef)
+{
+    Inventory* fast;
+    Inventory* slow;
+    slow = source;
+    fast = source->next;
+
+    while(fast != NULL) {
+        fast = fast->next;
+        if (fast != NULL) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+
+    *frontRef = source;
+    *backRef = slow->next;
+    slow->next = NULL;
+}
+
+void MergeSort(Inventory** headRef, int scenario) {
+    Inventory* head = *headRef;
+    Inventory* temp1;
+    Inventory* temp2;
+
+    if((head == NULL) || (head->next == NULL))  // base case for recursion - 0 or 1 
+        return;
+    
+    FrontBackSplit(head, &temp1, &temp2);
+
+    MergeSort(&temp1, scenario);  //Recursive sublist sorting
+    MergeSort(&temp2, scenario);  //Recursive sublist sorting
+
+    *headRef = SortedMerge(temp1, temp2, scenario);   //merge two sorted linked lists 
+}
+
+void sortAndDisplay() {
+    std::system("clear");  //use ("cls") on Windows
+    int entry;
+    showInventory();
+    cout << "Enter option to sort by: " << endl << endl;
+    cout << "1.) By brand name (Ascending)" << endl;
+    cout << "2.) By item name (Ascending)" << endl;
+    cout << "3.) By item quantity (Ascending)" << endl << endl << endl;
+    cout << "Option: ";
+    cin >> entry;
+    if(entry>0 && entry<4)
+        MergeSort(&top, entry);
+    else
+        cout << "Please enter one of the numbers listed!" << endl;
+}
 // void removeItem()
 // {
 //     const char *fileName = "inventory.dat";
@@ -244,4 +298,6 @@ void showInventory() {
 //     //To-dos:
 //     //Implement editing functions
 // }
+
+
 #endif

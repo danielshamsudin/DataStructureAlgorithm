@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 #include <iomanip>
-#include <cctype>
+#include <algorithm>
+#include <stdlib.h>
 #ifndef INVENTORY
 #define INVENTORY  
 using namespace std;
@@ -90,76 +91,27 @@ void removeItem()
     cout << "Item " << line << " has been removed." << endl;
 }
 
-string strLower(string a){
-    string b="";
-
-    for(int i=0; i<a.length(); i++)    
-        b+=tolower(a[i]);
-    return b;
-}
-
-
-
-
 void editItem()
 {
     const char *filename = "inventory.dat";
-    int defaultCounter = 1, selected, quantity;
-    bool found;
-    string input, brandName, itemName;
-    ifstream inputFile(filename);
-    ofstream temp("temp.dat", ofstream::out);
-
-    cout << "Select the item that you wish to edit (by brand name / by item name / by quantity): ";
-    getline(cin, input);
-    cout << input << endl;
-    if(isdigit(input[0]))
+    string tmpBrand, tmpItem;
+    char* userInput;
+    char c;
+    ifstream inputFile (filename);
+    ofstream tempFile ("temp.dat");
+    cout << "Please enter the Brand Name, Item Name or Quantity that you want to modify: ";
+    cin >> userInput; 
+    if (isdigit(userInput[0]))
     {
-        while(getline(inputFile, brandName, '\t')){
-            defaultCounter++;
-            getline(inputFile, itemName, '\t');
-            inputFile >> quantity;
-            if(stoi(input) == quantity)
-            {
-                selected = defaultCounter;
-                found = true;
-                break;
-            }
+        while (inputFile.get(c) && c != '\t')
+        {
+            
         }
-    }
+    } // search for Qty
     else
-    {   
-        while(getline(inputFile, brandName, '\t')){
-            defaultCounter++;
-            if(strLower(input) == strLower(brandName))
-            {
-                getline(inputFile, itemName, '\t');
-                inputFile >> quantity;
-                found = true;
-                break;
-            }
-            getline(inputFile, itemName, '\t');
-            if(strLower(input) == strLower(itemName))
-            {
-                inputFile >> quantity;
-                found = true; 
-                break;
-            }
-        }
-    }
+    {
+        
+    } // search for BrandName, ItemName
 
-
-    if(found==true) {
-        cout << endl << "Item of desired property " << "''" << input << " '' found. Details are as follows: " << endl;
-        cout << "Brand name: " << brandName << endl;
-        cout << "Item name: " << itemName << endl;
-        cout << "Quantity: " << quantity << endl;
-        cout << endl << endl << endl << "Please select which property to edit";
-    }
-    else cout << "Item not found." << endl;
-
-
-    //To-dos:
-    //Implement editing functions
 }
 #endif
