@@ -116,7 +116,7 @@ Inventory* SortedMerge(Inventory* a, Inventory* b, int scenario)
     else if (b == NULL)       //Base case 2 
         return(a);
 
-    if(scenario==1) {          //Sorting scenario 1 (Brand Name Sorting)
+    if(scenario==1) {          //Sorting scenario 1 (Ascending Brand Name Sorting)
         if (a->brandName <= b->brandName) {
             result = a;       
             result->next = SortedMerge(a->next, b, scenario);
@@ -126,7 +126,17 @@ Inventory* SortedMerge(Inventory* a, Inventory* b, int scenario)
             result->next = SortedMerge(a, b->next, scenario);
         }
     }
-    else if(scenario==2) {      //Sorting scenario 2 (Item Name Sorting)
+    else if(scenario==2) {          //Sorting scenario 2 (Descending Brand Name Sorting)
+        if (a->brandName > b->brandName) {
+            result = a;       
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
+    else if(scenario==3) {      //Sorting scenario 3 (Ascending Item Name Sorting)
         if (a->itemName <= b->itemName) {
             result = a;
             result->next = SortedMerge(a->next, b, scenario);
@@ -136,8 +146,28 @@ Inventory* SortedMerge(Inventory* a, Inventory* b, int scenario)
             result->next = SortedMerge(a, b->next, scenario);
         }
     }
-    else if(scenario==3) {      //Sorting scenario 3 (Item Quantity Sorting)
+    else if(scenario==4) {      //Sorting scenario 4 (Descending Item Name Sorting)
+        if (a->itemName > b->itemName) {
+            result = a;
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
+    else if(scenario==5) {      //Sorting scenario 5 (Ascending Item Quantity Sorting)
         if (a->quantity <= b->quantity) {
+            result = a;
+            result->next = SortedMerge(a->next, b, scenario);
+        }
+        else {
+            result = b;
+            result->next = SortedMerge(a, b->next, scenario);
+        }
+    }
+    else if(scenario==6) {      //Sorting scenario 6 (Descending Item Quantity Sorting)
+        if (a->quantity > b->quantity) {
             result = a;
             result->next = SortedMerge(a->next, b, scenario);
         }
@@ -191,11 +221,15 @@ void sortAndDisplay() {
     showInventory();
     cout << "Enter option to sort by: " << endl << endl;
     cout << "1.) By brand name (Ascending)" << endl;
-    cout << "2.) By item name (Ascending)" << endl;
-    cout << "3.) By item quantity (Ascending)" << endl << endl << endl;
+    cout << "2.) By brand name (Descending)" << endl;
+    cout << "3.) By item name (Ascending)" << endl;
+    cout << "4.) By item name (Descending)" << endl;
+    cout << "5.) By item quantity (Ascending)" << endl;
+    cout << "6.) By item quantity (Descending)" << endl << endl << endl;
+
     cout << "Option: ";
     cin >> entry;
-    if(entry>0 && entry<4)
+    if(entry>0 && entry<7)
         MergeSort(&top, entry);
     else
         cout << "Please enter one of the numbers listed!" << endl;
