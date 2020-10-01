@@ -6,5 +6,7 @@ int main()
 {
 	loadInventory();
 	showInventory();
-	editItem();
+	removeItem();
+	loadInventory();
+	showInventory();
 }
