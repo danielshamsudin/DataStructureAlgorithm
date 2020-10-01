@@ -1,14 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
-#include <iomanip>
-#include <cctype>
 #include "Date.h"
-#ifndef INVENTORY
-#define INVENTORY  
-using namespace std;
+#ifndef INVENTORY_STACK
+#define INVENTORY_STACK
 
+
+
+
+using namespace std;
 
 struct Inventory
 {
@@ -16,14 +16,15 @@ struct Inventory
     string itemName;
     int quantity;
     Date date;
-    struct Inventory* next;
+    Inventory* next;
 };
 
-struct Inventory* top;
+Inventory* top;
+
 
 void push(string brandName, string itemName, int quantity, Date expiryDate)
 {
-    struct Inventory* temp;
+    Inventory* temp;
     temp = new Inventory();
 
     if(!temp)
@@ -46,7 +47,7 @@ bool isEmpty()
 
 void pop()
 {
-    struct Inventory* temp;
+    Inventory* temp;
 
     if(isEmpty())
         cout << "\nStack Underflow" << endl;
@@ -81,7 +82,7 @@ void loadInventory()
 void showInventory()
 {
     int counter = 0;
-    struct Inventory* temp;
+    Inventory* temp;
 
     if(isEmpty())
         cout << "Nothing to show" << endl;
@@ -296,75 +297,268 @@ void sortAndDisplay()
 //     cout << "Item " << line << " has been removed." << endl;
 // }
 
-// string strLower(string a){
-//     string b="";
+string strLower(string a){
+    string b="";
 
-//     for(int i=0; i<a.length(); i++)    
-//         b+=tolower(a[i]);
-//     return b;
-// }
-
-// void editItem()
-// {
-//     const char *filename = "inventory.dat";
-//     int defaultCounter = 1, selected, quantity;
-//     bool found;
-//     string input, brandName, itemName;
-//     ifstream inputFile(filename);
-//     ofstream temp("temp.dat", ofstream::out);
-
-//     cout << "Select the item that you wish to edit (by brand name / by item name / by quantity): ";
-//     getline(cin, input);
-//     cout << input << endl;
-//     if(isdigit(input[0]))
-//     {
-//         while(getline(inputFile, brandName, '\t')){
-//             defaultCounter++;
-//             getline(inputFile, itemName, '\t');
-//             inputFile >> quantity;
-//             if(stoi(input) == quantity)
-//             {
-//                 selected = defaultCounter;
-//                 found = true;
-//                 break;
-//             }
-//         }
-//     }
-//     else
-//     {   
-//         while(getline(inputFile, brandName, '\t')){
-//             defaultCounter++;
-//             if(strLower(input) == strLower(brandName))
-//             {
-//                 getline(inputFile, itemName, '\t');
-//                 inputFile >> quantity;
-//                 found = true;
-//                 break;
-//             }
-//             getline(inputFile, itemName, '\t');
-//             if(strLower(input) == strLower(itemName))
-//             {
-//                 inputFile >> quantity;
-//                 found = true; 
-//                 break;
-//             }
-//         }
-//     }
+    for(int i=0; i<a.length(); i++)    
+        b+=tolower(a[i]);
+    return b;
+}
 
 
-//     if(found==true) {
-//         cout << endl << "Item of desired property " << "''" << input << " '' found. Details are as follows: " << endl;
-//         cout << "Brand name: " << brandName << endl;
-//         cout << "Item name: " << itemName << endl;
-//         cout << "Quantity: " << quantity << endl;
-//         cout << endl << endl << endl << "Please select which property to edit";
-//     }
-//     else cout << "Item not found." << endl;
+Inventory* middle(Inventory* start, Inventory* last) //utility fn for binSearch, searches for middle node
+{
+    if(start==NULL)
+        return NULL;
+    
+    Inventory* slow = start;
+    Inventory* fast = start -> next;
+
+    while(fast!=last)
+    {
+        fast = fast -> next;
+        if(fast!=last)
+        {
+            slow = slow -> next;
+            fast = fast -> next;
+        }
+    }
+
+    return slow;
+
+}
+
+Inventory* binSearch(Inventory* head, int qty) //overloaded binSearch fn for quantity
+{
+    Inventory* start = head;
+    Inventory* last = NULL;
+
+    do
+    {
+        Inventory* mid = middle(start, last);
+
+        if(mid==NULL)
+            return NULL;
+
+        if(mid->quantity==qty) {
+            cout << mid->quantity;
+            return mid;
+        }
+
+        else if(mid->quantity < qty)
+            start = mid->next;
+        
+        else
+            last = mid;
+        
+    } while (last == NULL || last!=start);
+
+    return NULL;
+}
+
+Inventory* binSearch(Inventory* head, string input, int choice) //overloaded binSearch fn for string-based data
+{
+    Inventory* start = head;
+    Inventory* last = NULL;
+
+    do
+    {
+        Inventory* mid = middle(start, last);
+
+        if(mid==NULL)
+            return NULL;
+
+        if(choice==1) {
+            if(mid->brandName==input)
+                return mid;
+            else if(mid->brandName < input)
+                start = mid->next;
+            else
+                last = mid;
+        }
+        else if(choice==2) {
+            if(mid->itemName==input)
+                return mid;
+            else if(mid->brandName < input)
+                start = mid->next;
+            else
+                last = mid;
+        }         
+    } while (last == NULL || last!=start);
+
+    return NULL;
+}
+
+Inventory* binSearch(Inventory* head, Date d) //overloaded binSearch fn for date-based data
+{
+    Inventory* start = head;
+    Inventory* last = NULL;
+
+    do
+    {
+        Inventory* mid = middle(start, last);
+
+        if(mid==NULL)
+            return NULL;
+
+        if(mid->date.getYear()==d.getYear()) {
+            if(mid->date.getMonth()==d.getMonth()){
+                if(mid->date.getDay()==d.getDay())
+                    return mid;
+                else if(mid->date.getDay() < d.getDay())
+                    start = mid->next;
+            }
+            else if(mid->date.getMonth() < d.getMonth())
+                start = mid->next;
+        }
+        else if(mid->date.getYear() < d.getYear())
+            start = mid->next;
+        
+        else
+            last = mid;
+        
+    } while (last == NULL || last!=start);
+
+    return NULL;
+}
 
 
-//     //To-dos:
-//     //Implement editing functions
-// }
+
+void editItem()
+{
+    const char *filename = "inventory.dat";
+    int defaultCounter = 1, selected, quantity, choice;
+    bool found;
+    string input, brandName, itemName;
+    Date date;
+    ifstream inputFile(filename);
+    ofstream temp("temp.dat", ofstream::out);
+
+    cout << "Search the item that you wish to edit: \n" << endl;
+    cout << "1.) Search by Brand name: " << endl;
+    cout << "2.) Search by Item name: " << endl;
+    cout << "3.) Search by Item quantity: " << endl;
+    cout << "4.) Search by expiry date: \n" << endl << endl;
+    cout << "Choice: ";
+
+    cin >> choice;
+
+    if(choice==1) {
+        cout << "\n\nEnter Brand Name: ";
+        cin >> input;
+        MergeSort(&top, 1);
+        if(binSearch(top, input, choice) == NULL)
+            cout << "Item with brand name " << input << " not found." << endl;
+        else {
+            Inventory* info = binSearch(top, input, choice);
+
+            cout << "Item has been found, bitch. Details are as follows:\n" << endl;
+            cout << "Brand name: " << info->brandName << endl;
+            cout << "Item name: " << info->itemName << endl;
+            cout << "Item quantity: " << info->quantity << endl;
+            cout << "Expiry date: " << info->date.getDate() << endl;
+        }
+    }
+    if(choice==2) {
+        cout << "\n\nEnter Item Name: ";
+        cin >> input;
+        MergeSort(&top, 3);
+        if(binSearch(top, input, choice) == NULL)
+            cout << "Item with name " << input << " not found." << endl;
+        else {
+            Inventory* info = binSearch(top, input, choice);
+
+            cout << "Item has been found, bitch. Details are as follows:\n" << endl;
+            cout << "Brand name: " << info->brandName << endl;
+            cout << "Item name: " << info->itemName << endl;
+            cout << "Item quantity: " << info->quantity << endl;
+            cout << "Expiry date: " << info->date.getDate() << endl;
+        }
+    }
+    else if(choice==3) {
+        cout << "\n\nEnter Item Quantity: ";
+        cin >> input;
+        MergeSort(&top, 5);
+        if(binSearch(top, stoi(input)) == NULL)
+            cout << "Item is not found faggot" << endl;
+        else {
+            Inventory* info = binSearch(top, stoi(input));
+
+            cout << "Item has been found, bitch. Details are as follows:\n" << endl;
+            cout << "Brand name: " << info->brandName << endl;
+            cout << "Item name: " << info->itemName << endl;
+            cout << "Item quantity: " << info->quantity << endl;
+            cout << "Expiry date: " << info->date.getDate() << endl;
+        }
+    }
+    else if(choice==4) {
+        int year, month, day;
+        cout << "\n\nEnter Expiry Date (Day/Month/Year): ";
+        cin >> day >> month >> year;
+        Date date(day, month, year);
+        MergeSort(&top, 7);
+        if(binSearch(top, date) == NULL)
+            cout << "Item with name " << input << " not found." << endl;
+        else {
+            Inventory* info = binSearch(top, date);
+
+            cout << "Item has been found, bitch. Details are as follows:\n" << endl;
+            cout << "Brand name: " << info->brandName << endl;
+            cout << "Item name: " << info->itemName << endl;
+            cout << "Item quantity: " << info->quantity << endl;
+            cout << "Expiry date: " << info->date.getDate() << endl;
+        }
+    }
+
+    /*{
+        while(getline(inputFile, brandName, '\t')){
+            defaultCounter++;
+            getline(inputFile, itemName, '\t');
+            inputFile >> quantity;
+            if(stoi(input) == quantity)
+            {
+                selected = defaultCounter;
+                found = true;
+                break;
+            }
+        }
+    }
+    else
+    {   
+        while(getline(inputFile, brandName, '\t')){
+            defaultCounter++;
+            if(strLower(input) == strLower(brandName))
+            {
+                getline(inputFile, itemName, '\t');
+                inputFile >> quantity;
+                found = true;
+                break;
+            }
+            getline(inputFile, itemName, '\t');
+            if(strLower(input) == strLower(itemName))
+            {
+                inputFile >> quantity;
+                found = true; 
+                break;
+            }
+        }
+    }
+
+
+    if(found==true) {
+        cout << endl << "Item of desired property " << "''" << input << " '' found. Details are as follows: " << endl;
+        cout << "Brand name: " << brandName << endl;
+        cout << "Item name: " << itemName << endl;
+        cout << "Quantity: " << quantity << endl;
+        cout << "Date: "
+        cout << endl << endl << endl << "Please select which property to edit";
+    }
+    else cout << "Item not found." << endl;*/
+
+
+    //To-dos:
+    //Implement editing functions
+}
 
 
 #endif

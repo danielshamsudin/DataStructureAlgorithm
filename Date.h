@@ -1,8 +1,9 @@
+#ifndef DATE
+#define DATE
 #include <algorithm>
 #include <iostream>
 #include <string>
-#ifndef DATE
-#define DATE
+
 using namespace std;
 
 class Date
