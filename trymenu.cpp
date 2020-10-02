@@ -24,32 +24,31 @@ void menu()
     {
         case 1:
             system("CLS");
-            InventoryStack::showInventory();
+            InventoryStack::showInventoryWithExpiryDate();
             cout << "______________________________________________________________\n";
             cout << "Do you wish to sort these items? (y/n):";
             cin >> chs;
             if (chs =='y' || chs == 'Y')
             {
                 InventoryStack::sortAndDisplay();
-                InventoryStack::showInventory();
+                InventoryStack::showInventoryWithExpiryDate();
             }
             break;
         case 2:
             system("CLS");
             InventoryStack::addItem();
-            InventoryStack::loadInventory();
+            cin.get();
+            InventoryStack::showInventoryWithExpiryDate();
             break;
         case 3:
             system("CLS");
-            InventoryStack::showInventory();
-            cout << endl;
-//            removeItem();
+            InventoryStack::showInventoryWithExpiryDate();
+            InventoryStack::removeItem();
+            InventoryStack::loadInventory();
             break;
         case 4:
             system("CLS");
-//            editItem();
-            InventoryStack::showInventoryWithExpiryDate();
-//            InventoryStack::check();
+            InventoryStack::editItem();
             break;
         default:
             break;
