@@ -2,4 +2,5 @@
 Data Structure and Algorithm
 
 
-STATUS: COMPLETED
+build and run trymenu.cpp
+
