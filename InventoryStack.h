@@ -111,7 +111,7 @@ namespace InventoryStack
         int currentMonth = atoi(m);
         int currentYear = atoi(y);
         int counter = 0;
-        string status = "";
+        string status = "|";
         struct Inventory* temp;
 
         if(isEmpty())
@@ -126,25 +126,25 @@ namespace InventoryStack
                 {
                     if (temp->date.getDay() == currentDay)
                     {
-                        status = "(Expired)";
+                        status = "|(Expired)";
                     }
                     else if (temp->date.getDay() > currentDay)
                     {
-                        status = "(Expiring Soon)";
+                        status = "|(Expiring Soon)";
                     }
                     else
                     {
-                        status = "(Expired)";
+                        status = "|(Expired)";
                     }
                 }
                 else if (temp->date.getYear() < currentYear )
                 {
-                    status = "(Expired)";
+                    status = "|(Expired)";
                 }
                 else if (temp->date.getYear() == currentYear && temp->date.getMonth() < currentMonth)
-                    status = "(Expired)";
+                    status = "|(Expired)";
                 else
-                    status = "";
+                    status = "|";
 
                 counter++;
 
@@ -152,6 +152,7 @@ namespace InventoryStack
                 cout << setw(2)<<counter << ")" << setw(15) << centered((string)temp->brandName) << setw(20) << centered((string)temp->itemName) << setw(5) << temp->quantity << setw(28) << centered((string)temp->date.getDate()) <<status<< endl;
                 temp = temp->next;
             }
+            cout << "______________________________________________________________\n";
         }
     }
 
@@ -190,28 +191,28 @@ namespace InventoryStack
         cin >> quantity;
         cout << "Date: \n";
         cout << "Please enter a year:";
-        year = int_range_validation(1900,3000,"Please enter a year:");
+        year = int_range_validation(1900,3000,"Please enter a valid year (1900-3000) :");
         cout << "Please enter a month:";
-        month = int_range_validation(0,12,"Please enter a month:");
+        month = int_range_validation(1,12,"Please enter a valid month (1-12)!:");
         cout << "Please enter day:";
         if (month == 2)
         {
             if (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0))
             {
-                day = int_range_validation(0,30, "Please enter day:");
+                day = int_range_validation(1,29, "Error, Please enter valid day! (1-29):");
             }
             else
             {
-                day = int_range_validation(0,29," Please enter day:");
+                day = int_range_validation(1,28,"Error, Please enter valid day! (1-28):");
             }
         }
         else if (month==3 || month==5 || month==7 || month==8 || month==10 || month==12)
         {
-            day = int_range_validation(0,31, "Please enter day:");
+            day = int_range_validation(1,31,"Error, Please enter valid day! (1-31):");
         }
         else
         {
-            day = int_range_validation(0,30,"Please enter day:");
+            day = int_range_validation(1,30,"Error, Please enter valid day! (1-30):");
         }
 
 
@@ -419,14 +420,6 @@ namespace InventoryStack
         emptyStack();
     }
 
-    string strLower(string a){
-        string b="";
-
-        for(int i=0; i<a.length(); i++)
-            b+=tolower(a[i]);
-        return b;
-    }
-
     Inventory* seqSearch(Inventory* top, int qty) //overloaded sequential search fn for quantity
     {
         Inventory* temp = top;
@@ -520,7 +513,8 @@ namespace InventoryStack
         }
         else if(choice==2) {
             cout << "\n\nEnter Item Name: ";
-            cin >> input;
+            cin.ignore();
+            getline(cin, input);
             if(seqSearch(top, input, choice) == NULL)
                 cout << "Item with name " << input << " not found." << endl;
             else {
@@ -578,13 +572,14 @@ namespace InventoryStack
                 cout << "Item quantity: " << info->quantity << endl;
                 cout << "Expiry date: " << info->date.getDate() << endl;
                 cout << "----------------------------------------------\n";
-                cout << endl << endl << endl;
+                cout << endl;
                 found =true;
             }
         }
 
         if(found)
         {
+            cout << "\n\n";
             cout << "Select the property to edit: " << endl << endl;
             cout << "1.) Brand name: " << endl;
             cout << "2.) Item name: " << endl;
@@ -609,8 +604,31 @@ namespace InventoryStack
             }
             else if(choice==4) {
                 int year, month, day;
-                cout << "\n\nEnter New Expiry Date (Day/Month/Year): ";
-                cin >> day >> month >> year;
+                cout << "\n\nEnter New Expiry Date: \n";
+                cout << "Year:";
+                year = int_range_validation(1900,3000,"Please enter a valid year (1900-3000) :");
+                cout << "Month:";
+                month = int_range_validation(1,12,"Please enter a valid month (1-12)!:");
+                cout << "Day:";
+                if (month == 2)
+                {
+                    if (year % 400 == 0 || (year % 4 == 0 && year % 100 != 0))
+                    {
+                        day = int_range_validation(1,29, "Error, Please enter valid day! (1-29):");
+                    }
+                    else
+                    {
+                        day = int_range_validation(1,28,"Error, Please enter valid day! (1-28):");
+                    }
+                }
+                else if (month==3 || month==5 || month==7 || month==8 || month==10 || month==12)
+                {
+                    day = int_range_validation(1,31,"Error, Please enter valid day! (1-31):");
+                }
+                else
+                {
+                    day = int_range_validation(1,30,"Error, Please enter valid day! (1-30):");
+                }
                 Date newdate(day, month, year);
                 info->date = newdate;
             }

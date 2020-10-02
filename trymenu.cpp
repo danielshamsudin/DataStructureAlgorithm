@@ -16,16 +16,16 @@ void menu()
     cout << "|    2. Add Item        |\n";
     cout << "|    3. Remove Item     |\n";
     cout << "|    4. Edit Item       |\n";
+    cout << "|    5. Exit            |\n";
     cout << "-------------------------\n";
     cout << "Please enter menu choice:";
-    cin >> choice;
+    choice = InventoryStack::int_range_validation(1,5,"Please enter the correct menu choice! :");
 
     switch (choice)
     {
         case 1:
             system("CLS");
             InventoryStack::showInventoryWithExpiryDate();
-            cout << "______________________________________________________________\n\n\n";
             cout << "Do you wish to sort these items? (y/n):";
             cin >> chs;
             if (chs =='y' || chs == 'Y')
@@ -49,6 +49,12 @@ void menu()
         case 4:
             system("CLS");
             InventoryStack::editItem();
+            break;
+        case 5:
+            system("CLS");
+            cout << "Thank you!\n";
+            cin.get();
+            exit(0);
             break;
         default:
             break;
