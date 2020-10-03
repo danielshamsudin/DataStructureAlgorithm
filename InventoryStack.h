@@ -176,8 +176,7 @@ namespace InventoryStack
                 cin.ignore(256,'\n');
                 cout << "Please enter menu choice: ";
                 cin >> i;
-            }
-            
+            }  
         }while( i < a || i > b);
 
         return i;
