@@ -9,9 +9,6 @@
 #ifndef INVENTORY_STACK
 #define INVENTORY_STACK
 
-
-
-
 using namespace std;
 
 namespace InventoryStack
@@ -172,6 +169,15 @@ namespace InventoryStack
                 showMsg = true;
             }
             cin >> i;
+            while(cin.fail())
+            {
+                cout << "Entered choice is not an integer!\n";
+                cin.clear();
+                cin.ignore(256,'\n');
+                cout << "Please enter menu choice: ";
+                cin >> i;
+            }
+            
         }while( i < a || i > b);
 
         return i;
@@ -400,8 +406,6 @@ namespace InventoryStack
         }
 
         inputFile.close();
-//        cout << totalLine << endl;
-        // ifstream removal(fileName);
         inputFile.open(fileName);
         inputFile >> ws;
         while (inputFile.get(c)) {
