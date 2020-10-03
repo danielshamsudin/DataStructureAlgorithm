@@ -2,11 +2,4 @@
 Data Structure and Algorithm
 
 
-build and run trymenu.cpp
-
-
-Managed by:
-
-
-Daniel
-,James
+build and run trymenu.cpp to start the program
