@@ -498,7 +498,8 @@ namespace InventoryStack
         system("CLS");
         if(choice==1) {
             cout << "\n\nEnter Brand Name: ";
-            cin >> input;
+            cin.ignore();
+            getline(cin, input);;
             if(seqSearch(top, input, choice) == NULL)
                 cout << "Item with brand name " << input << " not found." << endl;
             else {
@@ -592,12 +593,14 @@ namespace InventoryStack
             cin >> choice;
             if(choice==1) {
                 cout << "\n\nEnter New Brand Name: ";
-                cin >> input;
+                cin.ignore();
+                getline(cin, input);
                 info->brandName = input;
             }
             if(choice==2) {
                 cout << "\n\nEnter New Item Name: ";
-                cin >> input;
+                cin.ignore();
+                getline(cin, input);
                 info->itemName = input;
             }
             else if(choice==3) {
